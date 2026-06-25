@@ -143,9 +143,9 @@ h2.section-title{color:var(--cream) !important}
     <div class="section-tag reveal">How It Works</div>
     <h2 class="section-title reveal" style="color:var(--cream)">Your path into the inner circle</h2>
     <div class="steps-grid">
-      <div class="step-tile reveal"><div class="step-num">Step 01</div><h3 class="step-title">Apply Below</h3><p class="step-desc">Fill in your name and email. We'll send you the payment instructions directly.</p></div>
-      <div class="step-tile reveal d1"><div class="step-num">Step 02</div><h3 class="step-title">Make Payment</h3><p class="step-desc">One-time lifetime membership fee of $2,000 USD via PayPal. No recurring charges — ever.</p></div>
-      <div class="step-tile reveal d2"><div class="step-num">Step 03</div><h3 class="step-title">Upload Your Proof</h3><p class="step-desc">Upload your PayPal payment confirmation screenshot through the form below. Our team reviews within 24 hours.</p></div>
+      <div class="step-tile reveal"><div class="step-num">Step 01</div><h3 class="step-title">Apply Below</h3><p class="step-desc">Fill in your name and email to apply for membership. Our team reviews every application personally.</p></div>
+      <div class="step-tile reveal d1"><div class="step-num">Step 02</div><h3 class="step-title">We Review Your Application</h3><p class="step-desc">Our team reviews your application and selects members who are genuinely dedicated Riley Green fans.</p></div>
+      <div class="step-tile reveal d2"><div class="step-num">Step 03</div><h3 class="step-title">Receive Your Access Code</h3><p class="step-desc">Selected members receive a unique Back Road Nation access code by email within 48 hours of approval.</p></div>
       <div class="step-tile reveal d3"><div class="step-num">Step 04</div><h3 class="step-title">Receive Your Access Code</h3><p class="step-desc">Once approved, you'll receive your unique Back Road Nation access code by email. Enter it in the Member Login to access the lounge.</p></div>
     </div>
   </div>
@@ -178,15 +178,15 @@ h2.section-title{color:var(--cream) !important}
     <h2 class="section-title reveal" style="color:var(--cream)">Join Back Road Nation</h2>
     <div class="join-layout">
       <div class="join-info reveal">
-        <h3>Lifetime membership.<br>One payment. Forever.</h3>
-        <div class="join-price">$2,000 <span>USD one-time</span></div>
+        <h3>Exclusive membership.<br>For real fans only.</h3>
+        
         <ul class="join-includes">
           <li>Exclusive private photo gallery</li>
           <li>Priority meet & greet booking</li>
           <li>Early access to all tickets</li>
-          <li>Personal fan message channel</li>
+          <li>Personal message to Riley's team</li>
           <li>Exclusive audio/video downloads</li>
-          <li>Official digital membership fan card</li>
+          <li>Official digital member card</li>
           <li>Back Road Nation member badge</li>
         </ul>
       </div>
@@ -223,7 +223,7 @@ h2.section-title{color:var(--cream) !important}
         <!-- Step 2: Upload proof -->
         <div id="step-proof" style="display:none">
           <div style="background:rgba(200,146,10,.08);border:1px solid rgba(200,146,10,.2);padding:.875rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--earth);line-height:1.6">
-            ✓ Application received! Check your email for payment instructions, then upload your proof below.
+            ✓ Application received! Our team will review your application and be in touch within 48 hours.
           </div>
           <form id="proof-form" enctype="multipart/form-data">
             <div style="margin-bottom:1.5rem">
@@ -236,7 +236,7 @@ h2.section-title{color:var(--cream) !important}
               <input type="file" id="proof-file" accept="image/*" required style="display:none"
                 onchange="document.getElementById('file-label').textContent = this.files[0]?.name || 'Click to upload screenshot'">
             </div>
-            <button type="submit" class="btn-gold" style="width:100%;justify-content:center">Upload Payment Proof</button>
+            
           </form>
         </div>
       </div>
@@ -309,7 +309,7 @@ document.getElementById('proof-form').addEventListener('submit', async e => {
     const r = await fetch(`/api/members/upload-proof/${id}/`, { method:'POST', body:fd });
     if (r.ok) {
       document.getElementById('step-proof').style.display = 'none';
-      showMsg('✓ Proof uploaded successfully! Our team will review your payment within 24 hours. You will receive your access code by email once approved.', 'success');
+      showMsg('✓ Application submitted! Our team will review and be in touch within 48 hours.', 'success');
     } else {
       showMsg('Upload failed. Please try again.', 'error');
     }

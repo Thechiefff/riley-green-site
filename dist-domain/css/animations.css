@@ -1,0 +1,236 @@
+/* ═══════════════════════════════════════
+   RILEY GREEN — BOLD ANIMATION SYSTEM
+═══════════════════════════════════════ */
+
+/* ── CURSOR ── */
+#rg-cursor {
+  position: fixed; pointer-events: none; z-index: 9999;
+  width: 10px; height: 10px;
+  background: var(--gold, #9a7b3f);
+  border-radius: 50%;
+  mix-blend-mode: difference;
+  transition: width .2s, height .2s, background .2s;
+  will-change: transform;
+}
+#rg-ring {
+  position: fixed; pointer-events: none; z-index: 9998;
+  width: 44px; height: 44px;
+  border: 1.5px solid rgba(154,123,63,.65);
+  border-radius: 50%;
+  transition: width .3s, height .3s, border-color .3s;
+  will-change: transform;
+}
+#rg-cursor.cursor-hover { width: 24px; height: 24px; background: var(--ink, #0f0c08); }
+#rg-ring.ring-hover { width: 64px; height: 64px; border-color: rgba(154,123,63,.9); }
+
+/* ── SPLIT TEXT ── */
+.rg-word {
+  display: inline-block;
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(60px) skewY(4deg);
+  opacity: 0;
+  animation: word-in 0.8s cubic-bezier(0.16,1,0.3,1) var(--d,0s) forwards;
+  will-change: clip-path, transform, opacity;
+}
+@keyframes word-in {
+  to { clip-path: inset(0 0 0% 0); transform: translateY(0) skewY(0deg); opacity: 1; }
+}
+
+/* ── BOLD SCROLL REVEAL ── */
+.rg-reveal {
+  opacity: 0;
+  transform: translateY(70px);
+  transition:
+    opacity 0.75s cubic-bezier(0.16,1,0.3,1) calc(var(--ri,0) * 0.04s),
+    transform 0.75s cubic-bezier(0.16,1,0.3,1) calc(var(--ri,0) * 0.04s);
+  will-change: opacity, transform;
+}
+.rg-reveal:nth-child(even)  { transform: translateY(70px) translateX(-18px); }
+.rg-reveal:nth-child(odd)   { transform: translateY(70px) translateX(18px);  }
+
+.rg-reveal.rg-visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0);
+}
+
+/* Stagger override for grids */
+.album-grid .rg-reveal:nth-child(1)  { transition-delay: 0s;    }
+.album-grid .rg-reveal:nth-child(2)  { transition-delay: .08s;  }
+.album-grid .rg-reveal:nth-child(3)  { transition-delay: .16s;  }
+.album-grid .rg-reveal:nth-child(4)  { transition-delay: .24s;  }
+.steps       .rg-reveal:nth-child(n) { transition-delay: calc(var(--ri,0) * 0.1s); }
+
+/* ── ALBUM CARD bold hover ── */
+.album-card {
+  transition:
+    border-color .25s,
+    transform .4s cubic-bezier(0.16,1,0.3,1),
+    box-shadow .4s,
+    opacity .3s !important;
+}
+.album-card:hover {
+  transform: translateY(-10px) scale(1.01) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.14) !important;
+}
+
+/* ── HERO IMAGE parallax container ── */
+.page-hero-img,
+.hero-bg { overflow: hidden; }
+.page-hero-img img { will-change: transform; }
+
+/* ── BUTTON bold hover ── */
+.btn-dark,
+.btn-black,
+.btn-cream,
+.btn-outline,
+.btn-gold,
+.nav-cta,
+.stream-btn,
+.filter-btn {
+  transition:
+    transform 0.35s cubic-bezier(0.16,1,0.3,1),
+    background 0.25s,
+    color 0.25s,
+    border-color 0.25s,
+    box-shadow 0.3s !important;
+  will-change: transform;
+}
+.btn-dark:hover,
+.btn-black:hover,
+.nav-cta:hover { box-shadow: 0 12px 36px rgba(0,0,0,.22); }
+
+/* ── NAV INDICATOR — sliding gold underline ── */
+#nav-indicator {
+  position: absolute;
+  bottom: -2px; left: 0;
+  height: 2px;
+  background: var(--gold, #9a7b3f);
+  transition: left .35s cubic-bezier(0.16,1,0.3,1), width .35s cubic-bezier(0.16,1,0.3,1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── SECTION TAG line draw ── */
+.rg-line-el::before {
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s;
+}
+.rg-line-el.line-drawn::before { transform: scaleX(1); }
+
+/* ── STAT NUMBER bold entrance ── */
+.stat-number,
+.scarcity-num,
+.score-val,
+.guarantee-number {
+  display: inline-block;
+  animation: none;
+}
+
+/* ── TOUR ROW hover slide ── */
+.tour-row,
+.show-row {
+  transition:
+    padding .2s cubic-bezier(0.16,1,0.3,1),
+    background .2s,
+    margin .2s !important;
+}
+
+/* ── TESTIMONIAL card hover ── */
+.testimonial {
+  transition: transform .4s cubic-bezier(0.16,1,0.3,1), border-color .25s, box-shadow .4s !important;
+}
+.testimonial:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,.08) !important;
+}
+
+/* ── GALLERY item hover ── */
+.gallery-item {
+  transition: transform .5s cubic-bezier(0.16,1,0.3,1) !important;
+  overflow: hidden;
+}
+.gallery-item:hover { transform: scale(1.03) !important; }
+
+/* ── BENEFIT card hover ── */
+.benefit {
+  transition: transform .4s cubic-bezier(0.16,1,0.3,1), border-color .25s, box-shadow .4s !important;
+}
+.benefit:hover {
+  transform: translateY(-8px) scale(1.01) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,.06) !important;
+}
+
+/* ── FOOTER brand entrance ── */
+.footer-brand {
+  opacity: 0;
+  animation: fade-up 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── STEP card hover ── */
+.step {
+  transition: transform .4s cubic-bezier(0.16,1,0.3,1), background .2s !important;
+}
+.step:hover { transform: translateY(-6px) !important; }
+
+/* ── PLEDGE ROW check bounce ── */
+.pledge-row.on .pledge-check,
+.pledge-row.on .pledge-box {
+  animation: check-bounce .4s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes check-bounce {
+  0%  { transform: scale(0.6); }
+  60% { transform: scale(1.25); }
+  100%{ transform: scale(1); }
+}
+
+/* ── NAV scroll shrink ── */
+nav {
+  transition: height .35s cubic-bezier(0.16,1,0.3,1),
+              background .35s,
+              box-shadow .35s !important;
+}
+nav.scrolled {
+  box-shadow: 0 4px 24px rgba(0,0,0,.06);
+}
+
+/* ── HERO scroll hint ── */
+.hero-scroll-line::after,
+.hero-scroll span {
+  animation: line-breathe 2.2s ease-in-out infinite;
+}
+@keyframes line-breathe {
+  0%,100% { opacity:.35; transform: scaleY(1); }
+  50%     { opacity:.7; transform: scaleY(1.18); }
+}
+
+/* ── IMAGE reveal wipe on load ── */
+.product-canvas img,
+.album-cover img,
+.bio-img-main img,
+.about-image,
+.tracks-img img,
+.perks-img img {
+  animation: img-wipe .9s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes img-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+/* ── GOLD PULSE on active elements ── */
+@keyframes gold-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(154,123,63,0); }
+  50%     { box-shadow: 0 0 0 8px rgba(154,123,63,.12); }
+}
+.nav-cta:focus, .btn-gold:focus { animation: gold-pulse 1.5s infinite; }
+
+/* ── TRACK ITEM hover ── */
+.track-item {
+  transition: padding-left .2s cubic-bezier(0.16,1,0.3,1), color .2s !important;
+}
+.track-item:hover { padding-left: .75rem !important; }

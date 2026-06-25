@@ -1,0 +1,8 @@
+Django>=4.0
+djangorestframework
+django-cors-headers
+whitenoise[brotli]
+gunicorn
+python-dotenv
+requests
+python-telegram-bot

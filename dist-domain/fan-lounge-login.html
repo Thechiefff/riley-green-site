@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member Login — Back Road Nation | Riley Green</title>
+<link rel="stylesheet" href="/css/site.css">
+<style>
+html,body{height:100%}
+body{background:var(--ink);color:var(--cream);display:flex;flex-direction:column;padding-top:0}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;min-height:100vh;position:relative}
+.bg-img{position:fixed;inset:0;z-index:0}
+.bg-img img{object-fit:cover;width:100%;height:100%;filter:brightness(.2)}
+.login-card{position:relative;z-index:2;background:rgba(26,18,8,.95);border:1px solid rgba(200,146,10,.15);padding:3.5rem;width:100%;max-width:440px;text-align:center;backdrop-filter:blur(12px)}
+.card-badge{font-family:var(--ui);font-size:.62rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--earth);margin-bottom:1.25rem}
+.card-title{font-family:var(--serif);font-size:1.8rem;font-weight:400;color:var(--cream);margin-bottom:.4rem}
+.card-sub{font-size:.82rem;color:rgba(245,240,232,.45);margin-bottom:2.5rem;line-height:1.6}
+.code-input{background:rgba(245,240,232,.05);border:1px solid rgba(200,146,10,.25);color:var(--cream);font-family:monospace;font-size:1.4rem;letter-spacing:.2em;text-align:center;padding:1rem 1.25rem;width:100%;outline:none;transition:border-color .2s;text-transform:uppercase}
+.code-input:focus{border-color:rgba(200,146,10,.6)}
+.code-input::placeholder{font-size:1rem;letter-spacing:.1em;color:rgba(245,240,232,.2)}
+.btn-gold{display:flex;align-items:center;justify-content:center;background:var(--earth);color:var(--cream);font-family:var(--ui);font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:.9rem;border:1px solid var(--earth);width:100%;margin-top:1rem;cursor:pointer;transition:all .2s}
+.btn-gold:hover{background:transparent;color:var(--earth)}
+.login-msg{font-size:.8rem;margin-top:1.25rem;line-height:1.6;padding:.75rem;display:none}
+.login-msg.show{display:block}
+.login-msg.error{background:rgba(150,0,0,.12);border:1px solid rgba(200,0,0,.18);color:#e07070}
+.login-msg.success{background:rgba(0,100,0,.12);border:1px solid rgba(0,180,0,.18);color:#7dcf7d}
+.card-footer{margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(245,240,232,.06)}
+.card-footer a{font-family:var(--ui);font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,232,.35);transition:color .2s}
+.card-footer a:hover{color:var(--earth)}
+</style>
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+<nav id="nav" style="background:rgba(10,6,2,.92)">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Riley Green</a>
+    <div class="nav-links">
+      <a href="/">Home</a><a href="/music.html">Music</a><a href="/tour.html">Tour</a>
+      <a href="/about.html">About</a><a href="/gallery.html">Gallery</a>
+      <a href="/fan-lounge.html" style="color:var(--earth) !important">Fan Lounge</a>
+    </div>
+    <a href="/fan-lounge.html" class="nav-cta" style="background:var(--earth);border-color:var(--earth)">Join Now</a>
+  </div>
+</nav>
+
+<main>
+  <div class="bg-img"><img src="/images/private/rg-private-stage.jpg" alt=""></div>
+  <div class="login-card">
+    <div class="card-badge">Back Road Nation</div>
+    <h1 class="card-title">Member Login</h1>
+    <p class="card-sub">Enter your unique access code to enter the private fan lounge. Your code was emailed to you after membership approval.</p>
+
+    <form id="login-form">
+      <input class="code-input" id="code-input" type="text" maxlength="9" placeholder="RG-XXXXXX" autocomplete="off" spellcheck="false">
+      <button type="submit" class="btn-gold">Enter the Lounge</button>
+    </form>
+
+    <div id="login-msg" class="login-msg"></div>
+
+    <div class="card-footer">
+      <a href="/fan-lounge.html">Not a member yet? Apply here</a>
+      &nbsp;&nbsp;·&nbsp;&nbsp;
+      <a href="/">Back to Riley Green</a>
+    </div>
+  </div>
+</main>
+
+<script>
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+
+// Auto-uppercase and format input
+const input = document.getElementById('code-input');
+input.addEventListener('input', e => {
+  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+  e.target.value = v;
+});
+
+const msg = document.getElementById('login-msg');
+const showMsg = (text, type) => { msg.textContent=text; msg.className=`login-msg ${type} show`; };
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const code = input.value.trim().toUpperCase();
+  if (code.length < 3) return;
+
+  try {
+    const r = await fetch('/api/members/verify/', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ code: code })
+    });
+    const d = await r.json();
+    if (r.ok && (d.status === 'valid' || d.valid === true || d.valid !== false && d.status !== 'invalid')) {
+      // Store session
+      localStorage.setItem('rg_session', d.session_token || code);
+      localStorage.setItem('rg_member_name', (d.member && d.member.first_name) || d.first_name || d.display_name || 'Member');
+      localStorage.setItem('rg_access_code', code);
+      window.location.href = '/fan-lounge-dashboard.html';
+    } else {
+      showMsg(d.detail || d.error || 'Invalid access code. Please check and try again.', 'error');
+    }
+  } catch(err) {
+    showMsg('Connection error. Please try again.', 'error');
+  }
+});
+</script>
+<script src="/css/animations.js" defer></script>
+</body>
+</html>

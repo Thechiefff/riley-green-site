@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /fan-lounge-login.html
+Disallow: /fan-lounge-dashboard.html
+Disallow: /upload-proof.html
+Disallow: /api/
+
+Sitemap: https://rileygreenalabama.com/sitemap.xml

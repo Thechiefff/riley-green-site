@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Riley Green Discography — Albums, Songs & Streaming | Official Site</title>
+<meta name="description" content="Complete Riley Green discography. Stream all albums including Ain't My Last Rodeo, Way Out Here, Different Round Here and more on Spotify and Apple Music.">
+<meta name="keywords" content="riley green discography, riley green albums, riley green songs, riley green different round here, riley green way out here, riley green aint my last rodeo">
+<link rel="canonical" href="https://rileygreenalabama.com/discography.html">
+<meta property="og:title" content="Riley Green Discography — Official Albums & Songs">
+<meta property="og:description" content="Every Riley Green album from Different Round Here to Ain't My Last Rodeo. Stream on Spotify, Apple Music, and more.">
+<meta property="og:image" content="https://rileygreenalabama.com/images/rg-aintmylastrodeo.jpg">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+/* ── FILTER TABS ── */
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin:2.5rem 0 3rem}
+.filter-btn{
+  font-family:var(--ui);font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  padding:.55rem 1.5rem;border:1px solid var(--rule);background:transparent;color:var(--mid);
+  cursor:pointer;transition:all .2s;
+}
+.filter-btn:hover{border-color:var(--ink);color:var(--ink)}
+.filter-btn.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+/* ── ALBUM GRID ── */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem}
+.album-card{border:1px solid var(--rule);transition:border-color .2s,transform .2s,box-shadow .2s;overflow:hidden}
+.album-card:hover{border-color:rgba(154,123,63,.45);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.07)}
+
+/* Cover */
+.album-cover{aspect-ratio:1;overflow:hidden;position:relative;background:var(--cream)}
+.album-cover img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;display:block}
+.album-card:hover .album-cover img{transform:scale(1.04)}
+.album-cover-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:var(--cream);
+}
+.album-cover-placeholder span{
+  font-family:var(--serif);font-size:.7rem;letter-spacing:.25em;color:var(--light);text-transform:uppercase;
+}
+.play-btn{
+  position:absolute;bottom:12px;right:12px;
+  width:44px;height:44px;background:var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(8px);transition:all .25s;
+}
+.album-card:hover .play-btn{opacity:1;transform:translateY(0)}
+.play-btn svg{color:#fff;margin-left:2px}
+
+/* Info */
+.album-info{padding:1.5rem}
+.album-meta-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.album-name{font-family:var(--serif);font-size:1.2rem;font-weight:400;color:var(--ink);margin-bottom:.2rem}
+.album-year{font-family:var(--ui);font-size:.65rem;color:var(--light);letter-spacing:.1em}
+.album-type-badge{
+  font-family:var(--ui);font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:.3rem .7rem;border:1px solid var(--rule);color:var(--mid);white-space:nowrap;flex-shrink:0;
+}
+
+/* Tracklist toggle */
+.tracks-toggle{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--ui);font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid);padding:.75rem 0;border-top:1px solid var(--rule);margin-top:.5rem;
+  background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;transition:color .2s;
+}
+.tracks-toggle:hover{color:var(--ink)}
+.tracks-toggle svg{transition:transform .3s;flex-shrink:0}
+.tracks-toggle.open svg{transform:rotate(180deg)}
+
+.tracklist{
+  max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0;
+}
+.tracklist.open{max-height:600px;opacity:1}
+
+.track-item{
+  display:flex;align-items:center;gap:.875rem;
+  padding:.55rem 0;font-size:.85rem;color:var(--mid);
+  border-bottom:1px solid var(--rule);cursor:default;transition:color .15s;
+}
+.track-item:last-child{border-bottom:none}
+.track-item:hover{color:var(--ink)}
+.track-num{font-family:var(--ui);font-size:.6rem;color:var(--light);width:18px;flex-shrink:0}
+
+/* Stream buttons */
+.stream-row{display:flex;gap:.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
+.stream-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.6rem .5rem;font-family:var(--ui);font-size:.62rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:opacity .2s;
+}
+.stream-btn:hover{opacity:.85}
+.stream-spotify{background:#1DB954;color:#000}
+.stream-apple{background:#FC3C44;color:#fff}
+
+/* Page hero */
+.page-hero{height:50vh;min-height:360px;position:relative;display:flex;align-items:flex-end;padding:0 3rem 4rem}
+.page-hero-img{position:absolute;inset:0}
+.page-hero-img img{object-fit:cover;width:100%;height:100%;object-position:center 25%}
+.page-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,6,2,.85),rgba(10,6,2,.15))}
+.page-hero-content{position:relative;z-index:2;max-width:1200px;width:100%;margin:0 auto}
+.page-eyebrow{font-family:var(--ui);font-size:.68rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--earth);margin-bottom:.875rem;display:flex;align-items:center;gap:.75rem}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--earth)}
+.page-title{font-family:var(--serif);font-size:clamp(3rem,7vw,6rem);font-weight:400;color:var(--cream);line-height:.95}
+
+@media(max-width:768px){
+  .album-grid{grid-template-columns:1fr}
+  .page-hero{padding:0 1.5rem 3.5rem}
+}
+</style>
+  <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Riley Green</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/music.html">Music</a>
+      <a href="/discography.html" class="active">Discography</a>
+      <a href="/tour.html">Tour</a>
+      <a href="/about.html">About</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/fan-lounge.html" style="color:var(--earth)">Fan Lounge</a>
+    </div>
+    <a href="/tour.html" class="nav-cta">Get Tickets</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-img"><img src="/images/rg-myway-banner.jpg" alt="Riley Green Discography"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <div class="page-eyebrow">Full Catalogue</div>
+    <h1 class="page-title">Discography</h1>
+  </div>
+</div>
+
+<section style="padding:6rem 3rem 8rem">
+  <div class="container">
+
+    <div class="filter-bar" id="filters">
+      <button class="filter-btn active" onclick="filter('all',this)">All Releases</button>
+      <button class="filter-btn" onclick="filter('album',this)">Albums</button>
+      <button class="filter-btn" onclick="filter('ep',this)">EPs &amp; Singles</button>
+    </div>
+
+    <div class="album-grid" id="album-grid">
+
+      <!-- AIN'T MY LAST RODEO -->
+      <div class="album-card reveal" data-type="album">
+        <div class="album-cover">
+          <img src="/images/rg-aintmylastrodeo.jpg" alt="Ain't My Last Rodeo">
+          <div class="play-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        </div>
+        <div class="album-info">
+          <div class="album-meta-row">
+            <div>
+              <div class="album-name">Ain't My Last Rodeo</div>
+              <div class="album-year">2023 · 12 Tracks</div>
+            </div>
+            <span class="album-type-badge">Album</span>
+          </div>
+          <button class="tracks-toggle" onclick="toggleTracks(this)">
+            <span>View Tracklist</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tracklist">
+            <div class="track-item"><span class="track-num">1</span>Ain't My Last Rodeo</div>
+            <div class="track-item"><span class="track-num">2</span>If It Wasn't for Trucks</div>
+            <div class="track-item"><span class="track-num">3</span>Half of Me</div>
+            <div class="track-item"><span class="track-num">4</span>Miles on It <span style="font-size:.72rem;color:var(--gold);margin-left:.4rem">(feat. Ella Langley)</span></div>
+            <div class="track-item"><span class="track-num">5</span>Better Than Me</div>
+            <div class="track-item"><span class="track-num">6</span>I Wish Grandpas Never Died</div>
+            <div class="track-item"><span class="track-num">7</span>Worst Way</div>
+            <div class="track-item"><span class="track-num">8</span>Before the Whiskey Does</div>
+            <div class="track-item"><span class="track-num">9</span>Damn Good Day to Leave</div>
+            <div class="track-item"><span class="track-num">10</span>Way Out Here</div>
+            <div class="track-item"><span class="track-num">11</span>Different 'Round Here <span style="font-size:.72rem;color:var(--gold);margin-left:.4rem">(feat. Luke Combs)</span></div>
+            <div class="track-item"><span class="track-num">12</span>Back Seat Driver</div>
+          </div>
+          <div class="stream-row">
+            <a href="https://open.spotify.com/search/Ain't My Last Rodeo Riley Green/albums" target="_blank" class="stream-btn stream-spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.38 9.841-.719 13.44 1.56.42.24.6.84.301 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              Spotify
+            </a>
+            <a href="https://music.apple.com/us/search?term=riley+green+aint+my+last+rodeo" target="_blank" class="stream-btn stream-apple">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              Apple Music
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- WAY OUT HERE -->
+      <div class="album-card reveal" data-type="album">
+        <div class="album-cover">
+          <img src="/images/rg-wayouthere.jpg" alt="Way Out Here">
+          <div class="play-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        </div>
+        <div class="album-info">
+          <div class="album-meta-row">
+            <div>
+              <div class="album-name">Way Out Here</div>
+              <div class="album-year">2021 · 11 Tracks</div>
+            </div>
+            <span class="album-type-badge">Album</span>
+          </div>
+          <button class="tracks-toggle" onclick="toggleTracks(this)">
+            <span>View Tracklist</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tracklist">
+            <div class="track-item"><span class="track-num">1</span>Way Out Here</div>
+            <div class="track-item"><span class="track-num">2</span>Worst Way</div>
+            <div class="track-item"><span class="track-num">3</span>Bury Me in Alabama</div>
+            <div class="track-item"><span class="track-num">4</span>When She Comes Home</div>
+            <div class="track-item"><span class="track-num">5</span>Pretty Obsessed</div>
+            <div class="track-item"><span class="track-num">6</span>Nothing to It</div>
+            <div class="track-item"><span class="track-num">7</span>Outlaws</div>
+            <div class="track-item"><span class="track-num">8</span>My Woman</div>
+            <div class="track-item"><span class="track-num">9</span>Better Believe</div>
+            <div class="track-item"><span class="track-num">10</span>Half a Man</div>
+            <div class="track-item"><span class="track-num">11</span>God's Country Town</div>
+          </div>
+          <div class="stream-row">
+            <a href="https://open.spotify.com/search/Way Out Here Riley Green/albums" target="_blank" class="stream-btn stream-spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.38 9.841-.719 13.44 1.56.42.24.6.84.301 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              Spotify
+            </a>
+            <a href="https://music.apple.com/us/search?term=riley+green+way+out+here" target="_blank" class="stream-btn stream-apple">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              Apple Music
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIFFERENT 'ROUND HERE -->
+      <div class="album-card reveal" data-type="album">
+        <div class="album-cover">
+          <img src="/images/rg-tofc-classic.jpg" alt="Different Round Here">
+          <div class="play-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        </div>
+        <div class="album-info">
+          <div class="album-meta-row">
+            <div>
+              <div class="album-name">Different 'Round Here</div>
+              <div class="album-year">2019 · 10 Tracks</div>
+            </div>
+            <span class="album-type-badge">Album</span>
+          </div>
+          <button class="tracks-toggle" onclick="toggleTracks(this)">
+            <span>View Tracklist</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tracklist">
+            <div class="track-item"><span class="track-num">1</span>There Was This Girl</div>
+            <div class="track-item"><span class="track-num">2</span>I Wish Grandpas Never Died</div>
+            <div class="track-item"><span class="track-num">3</span>In the Middle of It</div>
+            <div class="track-item"><span class="track-num">4</span>Different 'Round Here <span style="font-size:.72rem;color:var(--gold);margin-left:.4rem">(feat. Luke Combs)</span></div>
+            <div class="track-item"><span class="track-num">5</span>Better Than Me</div>
+            <div class="track-item"><span class="track-num">6</span>On the Other Hand</div>
+            <div class="track-item"><span class="track-num">7</span>What Ifs</div>
+            <div class="track-item"><span class="track-num">8</span>Times Like These</div>
+            <div class="track-item"><span class="track-num">9</span>Down to the River</div>
+            <div class="track-item"><span class="track-num">10</span>I Won't Let You</div>
+          </div>
+          <div class="stream-row">
+            <a href="https://open.spotify.com/search/Different Round Here Riley Green/albums" target="_blank" class="stream-btn stream-spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.38 9.841-.719 13.44 1.56.42.24.6.84.301 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              Spotify
+            </a>
+            <a href="https://music.apple.com/us/search?term=riley+green+different+round+here" target="_blank" class="stream-btn stream-apple">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              Apple Music
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEHIND THE BAR (EP) -->
+      <div class="album-card reveal" data-type="ep">
+        <div class="album-cover">
+          <img src="/images/rg-megan-riley.jpg" alt="Behind the Bar">
+          <div class="play-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        </div>
+        <div class="album-info">
+          <div class="album-meta-row">
+            <div>
+              <div class="album-name">Behind the Bar</div>
+              <div class="album-year">2020 · 5 Tracks</div>
+            </div>
+            <span class="album-type-badge">EP</span>
+          </div>
+          <button class="tracks-toggle" onclick="toggleTracks(this)">
+            <span>View Tracklist</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tracklist">
+            <div class="track-item"><span class="track-num">1</span>If It Wasn't for Trucks</div>
+            <div class="track-item"><span class="track-num">2</span>Before I Go to Bed</div>
+            <div class="track-item"><span class="track-num">3</span>The Good Kind</div>
+            <div class="track-item"><span class="track-num">4</span>Bad Boy</div>
+            <div class="track-item"><span class="track-num">5</span>Behind the Bar</div>
+          </div>
+          <div class="stream-row">
+            <a href="https://open.spotify.com/search/Behind the Bar Riley Green/albums" target="_blank" class="stream-btn stream-spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.32-1.38 9.841-.719 13.44 1.56.42.24.6.84.301 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              Spotify
+            </a>
+            <a href="https://music.apple.com/us/search?term=riley+green+behind+the+bar" target="_blank" class="stream-btn stream-apple">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              Apple Music
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /album-grid -->
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div><div class="footer-brand">Riley Green</div><p class="footer-tagline">Country music from the heart of Alabama.</p></div>
+      <div class="footer-col"><h4>Navigate</h4><ul><li><a href="/">Home</a></li><li><a href="/music.html">Music</a></li><li><a href="/discography.html">Discography</a></li><li><a href="/tour.html">Tour</a></li><li><a href="/about.html">About</a></li><li><a href="/gallery.html">Gallery</a></li></ul></div>
+      <div class="footer-col"><h4>Listen</h4><ul><li><a href="https://open.spotify.com" target="_blank">Spotify</a></li><li><a href="https://music.apple.com" target="_blank">Apple Music</a></li><li><a href="https://www.youtube.com" target="_blank">YouTube</a></li></ul></div>
+      <div class="footer-col"><h4>Fan Lounge</h4><ul><li><a href="/fan-lounge.html">Join Back Road Nation</a></li><li><a href="/fan-lounge-login.html">Member Login</a></li><li><a href="/pledge">Take the Pledge</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Riley Green. All Rights Reserved.</p><p>Jacksonville, Alabama</p></div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible'); }), {threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', scrollY > 60));
+
+// Filter
+function filter(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.album-card').forEach(card => {
+    card.style.display = (type === 'all' || card.dataset.type === type) ? 'block' : 'none';
+  });
+}
+
+// Tracklist toggle
+function toggleTracks(btn) {
+  const tracklist = btn.nextElementSibling;
+  const isOpen = tracklist.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.tracklist.open').forEach(t => {
+    t.classList.remove('open');
+    t.previousElementSibling.classList.remove('open');
+    t.previousElementSibling.querySelector('span').textContent = 'View Tracklist';
+  });
+  if (!isOpen) {
+    tracklist.classList.add('open');
+    btn.classList.add('open');
+    btn.querySelector('span').textContent = 'Hide Tracklist';
+  }
+}
+</script>
+<script src="/css/animations.js" defer></script>
+</body>
+</html>

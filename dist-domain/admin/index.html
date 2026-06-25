@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1a2f10" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Archive Admin" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>Celebrity Archive — Admin</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg:      #0a0a0a;
+    --bg2:     #111;
+    --bg3:     #1a1a1a;
+    --text:    #f0f0f0;
+    --text2:   #999;
+    --muted:   #555;
+    --border:  #222;
+    --radius:  12px;
+    --safe-top:    env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --accent: #4caf50;
+    --rg-c:   #c8920a;
+    --ab-c:   #e74c3c;
+    --cj-c:   #d4a017;
+  }
+
+  html, body { height: 100%; overflow-x: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; }
+  body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
+
+  /* ── Login ─────────────────────────────────────── */
+  #login-screen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100dvh; padding: 1.5rem;
+    background: radial-gradient(ellipse at 50% 30%, #1a2f10 0%, #0a0a0a 70%);
+  }
+  .login-card { width: 100%; max-width: 340px; text-align: center; }
+  .login-logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; color: #fff; margin-bottom: 0.3rem; }
+  .login-logo span { color: var(--rg-c); }
+  .login-sub { color: var(--muted); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; }
+  .login-input {
+    width: 100%; padding: 1.1rem; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); text-align: center;
+    letter-spacing: 4px; margin-bottom: 1rem; outline: none; transition: border-color .2s;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; padding: 1.1rem; background: #2e7d32; color: #fff; border: none;
+    border-radius: var(--radius); font-weight: 800; letter-spacing: 1px; cursor: pointer;
+    text-transform: uppercase; transition: background .2s; min-height: 52px;
+  }
+  .login-btn:active { background: #1b5e20; }
+  .login-error { color: #f55; font-size: 0.82rem; margin-top: 0.8rem; min-height: 1.2em; }
+
+  /* ── App shell ─────────────────────────────────── */
+  #app { display: none; flex-direction: column; height: 100dvh; overflow: hidden; }
+  #app.visible { display: flex; }
+
+  /* ── Header ─────────────────────────────────────── */
+  .app-header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: calc(var(--safe-top) + 0.7rem) 1rem 0.7rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .app-brand { font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; }
+  .app-brand span { color: var(--rg-c); }
+  .hdr-right { display: flex; align-items: center; gap: 0.5rem; }
+  .hdr-btn {
+    padding: 0.45rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text2);
+    min-height: 36px; touch-action: manipulation;
+  }
+  .hdr-btn:active { background: var(--bg3); }
+
+  /* ── Site tabs ──────────────────────────────────── */
+  .site-tabs {
+    display: flex; background: var(--bg2); border-bottom: 1px solid var(--border);
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 0;
+  }
+  .site-tabs::-webkit-scrollbar { display: none; }
+  .site-tab {
+    flex: 1; min-width: 72px; padding: 0.65rem 0.3rem;
+    text-align: center; cursor: pointer; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted);
+    border-bottom: 3px solid transparent; transition: all .15s; touch-action: manipulation;
+    white-space: nowrap;
+  }
+  .site-tab-icon { font-size: 1.1rem; display: block; margin-bottom: 0.1rem; }
+  .site-tab.active[data-site="all"]{ color:#60a5fa; border-color:#60a5fa; }
+  .site-tab.active[data-site="rg"] { color:var(--rg-c); border-color:var(--rg-c); }
+  .site-tab.active[data-site="ab"] { color:var(--ab-c); border-color:var(--ab-c); }
+  .site-tab.active[data-site="cj"] { color:var(--cj-c); border-color:var(--cj-c); }
+
+  /* ── Feature tabs ───────────────────────────────── */
+  .nav-tabs {
+    display: flex; background: var(--bg3); border-bottom: 1px solid var(--border);
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-shrink: 0;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex: 1; min-width: 60px; padding: 0.6rem 0.2rem;
+    text-align: center; cursor: pointer; font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted);
+    border-bottom: 2px solid transparent; transition: all .15s; touch-action: manipulation;
+  }
+  .nav-tab-icon { font-size: 1rem; display: block; margin-bottom: 0.1rem; }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Scrollable content ─────────────────────────── */
+  .tab-pane { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1rem; padding-bottom: calc(1rem + var(--safe-bottom)); }
+  .tab-pane.active { display: block; }
+
+  /* ── Overview cards (3-col on mobile) ──────────── */
+  .overview-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem; margin-bottom: 1rem;
+  }
+  .site-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.7rem 0.4rem; text-align: center;
+  }
+  .site-card-name { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 0.4rem; }
+  .site-nums { display: flex; justify-content: center; gap: 0.5rem; }
+  .sn { text-align: center; }
+  .sn .n { font-size: 1.1rem; font-weight: 900; line-height: 1; }
+  .sn .l { font-size: 0.5rem; text-transform: uppercase; color: var(--muted); }
+
+  /* ── Visit banner ───────────────────────────────── */
+  .visits-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem; margin-bottom: 1rem;
+  }
+  .visit-cell {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.6rem 0.3rem; text-align: center;
+  }
+  .visit-cell .n { font-size: 1.1rem; font-weight: 900; color: #60a5fa; }
+  .visit-cell .l { font-size: 0.5rem; text-transform: uppercase; color: var(--muted); }
+
+  /* ── Per-site stat cards ─────────────────────────── */
+  .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem; text-align: center; }
+  .stat-num { font-size: 1.8rem; font-weight: 900; line-height: 1; }
+  .stat-lbl { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ── Section heading ─────────────────────────────── */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
+  .sec-title { font-size: 0.75rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+  .refresh-btn { padding: 0.35rem 0.7rem; border-radius: 8px; font-size: 0.7rem; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text2); min-height: 32px; }
+
+  /* ── Member cards ───────────────────────────────── */
+  .member-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem; margin-bottom: 0.6rem; }
+  .mc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem; }
+  .mc-name { font-weight: 700; font-size: 0.9rem; }
+  .mc-email { font-size: 0.72rem; color: var(--muted); margin-top: 0.05rem; word-break: break-all; }
+  .mc-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; flex-shrink: 0; margin-left: 0.5rem; }
+  .site-pill { font-size: 0.58rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 20px; text-transform: uppercase; }
+  .pill-rg { background: rgba(200,146,10,.15); color: var(--rg-c); border: 1px solid rgba(200,146,10,.3); }
+  .pill-ab { background: rgba(231,76,60,.15);  color: var(--ab-c); border: 1px solid rgba(231,76,60,.3); }
+  .pill-cj { background: rgba(212,160,23,.15); color: var(--cj-c); border: 1px solid rgba(212,160,23,.3); }
+  .status-badge { font-size: 0.6rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 20px; text-transform: uppercase; }
+  .s-active  { background: rgba(76,175,80,.15);  color:#4caf50; border:1px solid rgba(76,175,80,.3); }
+  .s-pending { background: rgba(255,152,0,.15);  color:#ff9800; border:1px solid rgba(255,152,0,.3); }
+  .s-proof   { background: rgba(33,150,243,.15); color:#2196f3; border:1px solid rgba(33,150,243,.3); }
+  .mc-code { font-family: monospace; font-size: 0.85rem; color: var(--cj-c); letter-spacing: 2px; margin: 0.25rem 0; }
+  .mc-date { font-size: 0.65rem; color: var(--muted); }
+  .mc-actions { display: flex; gap: 0.4rem; margin-top: 0.65rem; flex-wrap: wrap; }
+
+  /* ── Filter strip ───────────────────────────────── */
+  .filter-strip { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; overflow-x: auto; padding-bottom: 2px; }
+  .filter-strip::-webkit-scrollbar { display: none; }
+  .ftab {
+    padding: 0.38rem 0.75rem; border-radius: 20px; font-size: 0.68rem;
+    font-weight: 700; cursor: pointer; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); text-transform: uppercase;
+    white-space: nowrap; min-height: 32px; touch-action: manipulation;
+  }
+  .ftab.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .btn { padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; transition: opacity .15s; text-transform: uppercase; min-height: 40px; touch-action: manipulation; }
+  .btn:active { opacity: .75; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-approve { background: #2e7d32; color: #fff; }
+  .btn-copy    { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); }
+  .btn-full    { width: 100%; padding: 1rem; font-size: 0.9rem; border-radius: var(--radius); min-height: 52px; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+
+  /* ── Code generator ─────────────────────────────── */
+  .code-box { background: var(--bg2); border: 2px solid var(--accent); border-radius: var(--radius); padding: 1.5rem; text-align: center; margin-bottom: 1rem; }
+  .code-val { font-family: monospace; font-size: 1.8rem; font-weight: 900; color: var(--cj-c); letter-spacing: 4px; display: block; margin-bottom: 0.3rem; word-break: break-all; }
+  .code-hint { font-size: 0.72rem; color: var(--muted); }
+  .copy-ok { color: var(--accent); font-size: 0.78rem; margin-top: 0.4rem; display: none; }
+  .copy-ok.show { display: block; }
+  .btn-row { display: flex; flex-direction: column; gap: 0.7rem; }
+
+  /* ── Select ─────────────────────────────────────── */
+  .sel {
+    width: 100%; padding: 0.85rem 1rem; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); margin-bottom: 0.8rem; outline: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 1rem center;
+  }
+  .sel:focus { border-color: var(--accent); }
+
+  /* ── Code tester ─────────────────────────────────── */
+  .test-input {
+    width: 100%; padding: 1rem; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-family: monospace;
+    letter-spacing: 2px; text-align: center; text-transform: uppercase; margin-bottom: 0.8rem; outline: none;
+  }
+  .test-input:focus { border-color: var(--accent); }
+  .test-result { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-top: 0.8rem; display: none; }
+  .test-result.show { display: block; }
+  .test-result.valid { border-color: var(--accent); }
+  .test-result.invalid { border-color: #f55; }
+  .test-status { font-size: 1rem; margin-bottom: 0.3rem; }
+  .test-detail { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+  .test-detail b { color: var(--accent); }
+
+  /* ── Assign box ─────────────────────────────────── */
+  .assign-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-top: 1.2rem; }
+  .assign-box .sec-title { display: block; margin-bottom: 0.7rem; }
+  #assign-result { font-size: 0.8rem; color: var(--text2); margin-top: 0.6rem; min-height: 1.2em; }
+
+  /* ── Loading / empty ─────────────────────────────── */
+  .loading { text-align: center; padding: 2rem; color: var(--muted); }
+  .spinner { font-size: 1.6rem; display: block; margin: 0 auto 0.6rem; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.85rem; }
+
+  /* ── Toast ───────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: calc(1rem + var(--safe-bottom)); left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 0.7rem 1.2rem; border-radius: var(--radius); font-size: 0.82rem;
+    font-weight: 600; z-index: 999; transition: transform .3s ease;
+    max-width: 90vw; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Install banner ──────────────────────────────── */
+  .install-bar {
+    display: none; align-items: center; gap: 0.8rem;
+    background: var(--bg3); border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1rem; flex-shrink: 0;
+  }
+  .install-bar.show { display: flex; }
+  .install-bar p { flex: 1; font-size: 0.78rem; color: var(--text2); }
+  .install-bar .ib-btn { background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; min-height: 34px; }
+  .install-bar .ib-close { background: none; border: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; padding: 0.2rem; }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">ARCHIVE <span>ADMIN</span></div>
+    <div class="login-sub">Riley Green · Antonio · CoJo</div>
+    <input type="password" id="admin-token" class="login-input" placeholder="Admin Token" autocomplete="current-password" />
+    <button class="login-btn" onclick="doLogin()">Unlock →</button>
+    <div class="login-error" id="login-err"></div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Install prompt -->
+  <div class="install-bar" id="install-bar">
+    <p>📲 Add to home screen for quick access</p>
+    <button class="ib-btn" id="install-btn">Install</button>
+    <button class="ib-close" onclick="dismissInstall()">✕</button>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="app-brand">ARCHIVE <span>ADMIN</span></div>
+    <div class="hdr-right">
+      <button class="hdr-btn" onclick="loadAll()">↻</button>
+      <button class="hdr-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Site switcher -->
+  <div class="site-tabs">
+    <div class="site-tab active" data-site="all" onclick="switchSite('all',this)"><span class="site-tab-icon">🌐</span>All</div>
+    <div class="site-tab" data-site="rg"  onclick="switchSite('rg',this)"><span class="site-tab-icon">🤠</span>Riley</div>
+    <div class="site-tab" data-site="ab"  onclick="switchSite('ab',this)"><span class="site-tab-icon">🎭</span>Antonio</div>
+    <div class="site-tab" data-site="cj"  onclick="switchSite('cj',this)"><span class="site-tab-icon">🐴</span>CoJo</div>
+  </div>
+
+  <!-- Feature nav -->
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('dash',this)"><span class="nav-tab-icon">📊</span>Dashboard</div>
+    <div class="nav-tab" onclick="switchTab('members',this)"><span class="nav-tab-icon">👥</span>Members</div>
+    <div class="nav-tab" onclick="switchTab('gen',this)"><span class="nav-tab-icon">🔑</span>Generate</div>
+    <div class="nav-tab" onclick="switchTab('test',this)"><span class="nav-tab-icon">✅</span>Test Code</div>
+  </div>
+
+  <!-- Dashboard tab -->
+  <div class="tab-pane active" id="tab-dash">
+
+    <!-- All-sites overview -->
+    <div id="all-overview">
+      <div class="sec-head"><span class="sec-title">📊 All Sites — Members</span></div>
+      <div class="overview-row" id="ov-row">
+        <div class="site-card">
+          <div class="site-card-name">Riley Green</div>
+          <div class="site-nums">
+            <div class="sn"><div class="n" style="color:var(--rg-c)" id="ov-rg-t">—</div><div class="l">total</div></div>
+            <div class="sn"><div class="n" style="color:#ff9800" id="ov-rg-p">—</div><div class="l">pend</div></div>
+            <div class="sn"><div class="n" style="color:#4caf50" id="ov-rg-a">—</div><div class="l">active</div></div>
+          </div>
+        </div>
+        <div class="site-card">
+          <div class="site-card-name">Antonio</div>
+          <div class="site-nums">
+            <div class="sn"><div class="n" style="color:var(--ab-c)" id="ov-ab-t">—</div><div class="l">total</div></div>
+            <div class="sn"><div class="n" style="color:#ff9800" id="ov-ab-p">—</div><div class="l">pend</div></div>
+            <div class="sn"><div class="n" style="color:#4caf50" id="ov-ab-a">—</div><div class="l">active</div></div>
+          </div>
+        </div>
+        <div class="site-card">
+          <div class="site-card-name">CoJo</div>
+          <div class="site-nums">
+            <div class="sn"><div class="n" style="color:var(--cj-c)" id="ov-cj-t">—</div><div class="l">total</div></div>
+            <div class="sn"><div class="n" style="color:#ff9800" id="ov-cj-p">—</div><div class="l">pend</div></div>
+            <div class="sn"><div class="n" style="color:#4caf50" id="ov-cj-a">—</div><div class="l">active</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Site visits strip -->
+      <div class="sec-head" style="margin-bottom:0.5rem"><span class="sec-title">👁 Site Visits</span></div>
+      <div class="visits-strip">
+        <div class="visit-cell"><div class="n" id="vis-rg">—</div><div class="l">Riley (total)</div></div>
+        <div class="visit-cell"><div class="n" id="vis-ab">—</div><div class="l">Antonio</div></div>
+        <div class="visit-cell"><div class="n" id="vis-cj">—</div><div class="l">CoJo</div></div>
+        <div class="visit-cell"><div class="n" id="vis-today" style="color:#a78bfa">—</div><div class="l">Today (all)</div></div>
+      </div>
+    </div>
+
+    <!-- Per-site stats -->
+    <div id="site-stats" style="display:none">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num" id="ss-total">—</div><div class="stat-lbl">Total Members</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#4caf50" id="ss-active">—</div><div class="stat-lbl">Active</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#ff9800" id="ss-pending">—</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#60a5fa" id="ss-visits">—</div><div class="stat-lbl">Total Visits</div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num" style="color:#a78bfa" id="ss-today">—</div><div class="stat-lbl">Visits Today</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#34d399" id="ss-week">—</div><div class="stat-lbl">This Week</div></div>
+        <div class="stat-card"><div class="stat-num" id="ss-subs">—</div><div class="stat-lbl">Subscribers</div></div>
+        <div class="stat-card"><div class="stat-num" id="ss-donations">—</div><div class="stat-lbl">Donations</div></div>
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <span class="sec-title" id="pending-title">⏳ Pending (All Sites)</span>
+      <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+    </div>
+    <div id="pending-list"><div class="loading"><span class="spinner">⟳</span>Loading…</div></div>
+  </div>
+
+  <!-- Members tab -->
+  <div class="tab-pane" id="tab-members">
+    <div class="filter-strip">
+      <button class="ftab active" onclick="filterM('all',this)">All</button>
+      <button class="ftab" onclick="filterM('active',this)">Active</button>
+      <button class="ftab" onclick="filterM('pending',this)">Pending</button>
+    </div>
+    <div id="members-list"><div class="loading"><span class="spinner">⟳</span>Loading…</div></div>
+  </div>
+
+  <!-- Generate tab -->
+  <div class="tab-pane" id="tab-gen">
+    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Enter an email, select the site, tap Generate. The code saves to the database and works <strong style="color:var(--accent)">immediately</strong> in the Private Lounge.</p>
+    <select class="sel" id="gen-site">
+      <option value="rg">🤠 Riley Green (RG-)</option>
+      <option value="ab">🎭 Antonio Banderas (AB-)</option>
+      <option value="cj">🐴 CoJo America (CJ-)</option>
+    </select>
+    <input type="text" id="assign-fname" class="test-input" placeholder="First name (optional)" style="font-family:inherit;letter-spacing:0;text-align:left;margin-bottom:0.5rem" />
+    <input type="email" id="assign-email" class="test-input" placeholder="Email address (required)" style="font-family:inherit;letter-spacing:0;text-align:left;margin-bottom:0.8rem" />
+    <div class="code-box">
+      <span class="code-val" id="gen-code">——————</span>
+      <div class="code-hint">Generated code appears here — saved to DB</div>
+      <div class="copy-ok" id="copy-ok">✓ Copied to clipboard!</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-full btn-primary" id="gen-btn" onclick="generateCode()">🎲 Generate &amp; Issue Code</button>
+      <button class="btn btn-full btn-outline" onclick="copyCode()">📋 Copy Code</button>
+    </div>
+    <div id="assign-result" style="margin-top:0.8rem;font-size:0.82rem;color:var(--text2);"></div>
+  </div>
+
+  <!-- Test tab -->
+  <div class="tab-pane" id="tab-test">
+    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Verify any access code against the live database.</p>
+    <select class="sel" id="test-site">
+      <option value="rg">🤠 Riley Green</option>
+      <option value="ab">🎭 Antonio Banderas</option>
+      <option value="cj">🐴 CoJo America</option>
+    </select>
+    <input type="text" class="test-input" id="test-code" placeholder="RG-XXXXXX" maxlength="10" oninput="this.value=this.value.toUpperCase()" />
+    <button class="btn btn-full btn-primary" onclick="testCode()">🔍 Verify Code</button>
+    <div class="test-result" id="test-result">
+      <div class="test-status" id="test-status"></div>
+      <div class="test-detail" id="test-detail"></div>
+    </div>
+    <div style="margin-top:1rem;padding:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);">
+      <div class="sec-title" style="display:block;margin-bottom:0.6rem">🔓 Fix "Code In Use On Another Device"</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem">If a member is locked out because their session is stuck, clear it here. They can then log in straight away.</p>
+      <button class="btn btn-full" style="background:#7c3aed;color:#fff" onclick="clearSession()">🔓 Clear Session for Code Above</button>
+      <div id="clear-result" style="font-size:0.8rem;color:var(--text2);margin-top:0.6rem;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ──────────────────────────────────────
+const SITES = {
+  rg: { name:'Riley Green',     prefix:'RG-', api:'/riley-green/api', color:'#c8920a', pill:'pill-rg' },
+  ab: { name:'Antonio Banderas',prefix:'AB-', api:'/antonio/api',     color:'#e74c3c', pill:'pill-ab' },
+  cj: { name:'CoJo America',    prefix:'CJ-', api:'/cody-johnson/api',color:'#d4a017', pill:'pill-cj' },
+};
+
+let adminToken = '';
+let currentSite = 'all';
+let currentFilter = 'all';
+let allMembers = { rg:[], ab:[], cj:[] };
+let analytics   = { rg:{}, ab:{}, cj:{} };
+let generatedCode = '';
+let deferredPrompt = null;
+
+// ── PWA install ──────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-bar').classList.add('show');
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-bar').classList.remove('show');
+  deferredPrompt = null;
+  showToast('✅ App installed!');
+});
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  dismissInstall();
+});
+function dismissInstall() { document.getElementById('install-bar').classList.remove('show'); }
+
+// ── Auth ──────────────────────────────────────────
+function doLogin() {
+  const t = document.getElementById('admin-token').value.trim();
+  if (!t) { setLoginErr('Enter the admin token'); return; }
+  document.querySelector('.login-btn').textContent = 'Checking…';
+  fetch(`/riley-green/api/admin/members/?token=${t}`)
+    .then(r => {
+      if (r.ok) { adminToken = t; localStorage.setItem('arch_tok', t); showApp(); }
+      else { setLoginErr('Invalid token — try again'); document.querySelector('.login-btn').textContent = 'Unlock →'; }
+    })
+    .catch(() => { setLoginErr('Network error'); document.querySelector('.login-btn').textContent = 'Unlock →'; });
+}
+document.getElementById('admin-token').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  adminToken = ''; localStorage.removeItem('arch_tok');
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-token').value = '';
+  document.querySelector('.login-btn').textContent = 'Unlock →';
+}
+function setLoginErr(m) { document.getElementById('login-err').textContent = m; }
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  loadAll();
+}
+
+// Auto-login
+const saved = localStorage.getItem('arch_tok');
+if (saved) {
+  adminToken = saved;
+  fetch(`/riley-green/api/admin/members/?token=${adminToken}`)
+    .then(r => r.ok ? showApp() : (localStorage.removeItem('arch_tok')))
+    .catch(() => {});
+}
+
+// ── Site / Tab switching ──────────────────────────
+function switchSite(site, el) {
+  currentSite = site;
+  document.querySelectorAll('.site-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const isAll = site === 'all';
+  document.getElementById('all-overview').style.display  = isAll ? 'block' : 'none';
+  document.getElementById('site-stats').style.display   = isAll ? 'none'  : 'block';
+  document.getElementById('pending-title').textContent   = isAll ? '⏳ Pending (All Sites)' : `⏳ Pending — ${SITES[site].name}`;
+
+  if (!isAll) updateSiteStats(site);
+  renderPending(); renderMembers();
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── Data loading ──────────────────────────────────
+async function loadAll() {
+  let todayTotal = 0;
+  const jobs = Object.entries(SITES).map(async ([key, s]) => {
+    try {
+      const [mR, aR] = await Promise.all([
+        fetch(`${s.api}/admin/members/?token=${adminToken}`),
+        fetch(`${s.api}/analytics/`)
+      ]);
+      if (mR.ok) { const d = await mR.json(); allMembers[key] = d.members || []; }
+      if (aR.ok) {
+        const a = await aR.json();
+        analytics[key] = a;
+        const total   = a.members?.total   || 0;
+        const pending = a.members?.pending || 0;
+        const active  = a.members?.active  || 0;
+        const visits  = a.visits?.total    || 0;
+        const today   = a.visits?.today    || 0;
+        todayTotal += today;
+
+        $(`ov-${key}-t`, total);
+        $(`ov-${key}-p`, pending);
+        $(`ov-${key}-a`, active);
+        $(`vis-${key}`,  visits);
+      }
+    } catch {}
+  });
+
+  await Promise.all(jobs);
+  $('vis-today', todayTotal);
+
+  if (currentSite !== 'all') updateSiteStats(currentSite);
+  renderPending(); renderMembers();
+}
+
+function updateSiteStats(site) {
+  const a = analytics[site] || {};
+  $('ss-total',     a.members?.total   || '—');
+  $('ss-active',    a.members?.active  || '—');
+  $('ss-pending',   a.members?.pending || '—');
+  $('ss-visits',    a.visits?.total    || '—');
+  $('ss-today',     a.visits?.today    || '—');
+  $('ss-week',      a.visits?.this_week|| '—');
+  $('ss-subs',      a.subscribers      || '—');
+  $('ss-donations', a.donations        || '—');
+}
+
+function $(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+// ── Rendering ─────────────────────────────────────
+function getMembers() {
+  if (currentSite === 'all') {
+    return Object.entries(allMembers).flatMap(([k, ms]) => ms.map(m => ({...m, _site:k})));
+  }
+  return (allMembers[currentSite] || []).map(m => ({...m, _site:currentSite}));
+}
+
+function renderPending() {
+  const pending = getMembers().filter(m => m.status !== 'active');
+  const el = document.getElementById('pending-list');
+  if (!pending.length) { el.innerHTML = '<div class="empty">🎉 No pending applications</div>'; return; }
+  el.innerHTML = pending.map(m => memberCard(m, true)).join('');
+}
+
+function renderMembers() {
+  let ms = getMembers();
+  if (currentFilter === 'active')  ms = ms.filter(m => m.status === 'active');
+  if (currentFilter === 'pending') ms = ms.filter(m => m.status !== 'active');
+  const el = document.getElementById('members-list');
+  if (!ms.length) { el.innerHTML = `<div class="empty">No ${currentFilter} members</div>`; return; }
+  el.innerHTML = ms.map(m => memberCard(m, currentFilter !== 'active')).join('');
+}
+
+function memberCard(m, showApprove) {
+  const date = new Date(m.joined_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const site = SITES[m._site];
+  const isActive = m.status === 'active';
+  const sClass = isActive ? 's-active' : m.status === 'proof_submitted' ? 's-proof' : 's-pending';
+  const sLabel = isActive ? 'Active' : m.status === 'proof_submitted' ? 'Proof' : 'Pending';
+  return `
+  <div class="member-card" id="mc-${m._site}-${m.id}">
+    <div class="mc-top">
+      <div>
+        <div class="mc-name">${m.first_name}</div>
+        <div class="mc-email">${m.email}</div>
+      </div>
+      <div class="mc-badges">
+        <span class="site-pill ${site.pill}">${site.prefix.replace('-','')}</span>
+        <span class="status-badge ${sClass}">${sLabel}</span>
+      </div>
+    </div>
+    ${m.access_code ? `<div class="mc-code">${m.access_code}</div>` : ''}
+    <div class="mc-date">Joined ${date}</div>
+    <div class="mc-actions">
+      ${!isActive && showApprove ? `<button class="btn btn-approve" onclick="approveM('${m._site}',${m.id},'${m.email}',this)">✓ Approve</button>` : ''}
+      ${m.access_code ? `<button class="btn btn-copy" onclick="copy('${m.access_code}')">📋 Code</button>` : ''}
+      <button class="btn btn-copy" onclick="copy('${m.email}')">✉ Email</button>
+      ${isActive ? `<button class="btn btn-copy" style="color:#a78bfa;border-color:#a78bfa" title="Clear stuck session" onclick="clearSessionByEmail('${m._site}','${m.email}',this)">🔓</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── Actions ───────────────────────────────────────
+async function approveM(site, id, email, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const r = await fetch(`${SITES[site].api}/admin/approve-member/${id}/`, {
+      method: 'POST', headers: {'X-Admin-Token': adminToken}
+    });
+    const d = await r.json();
+    if (r.ok) { showToast(`✅ ${email} → ${d.access_code}`); loadAll(); }
+    else { showToast('Error: ' + (d.error||'Failed')); btn.disabled=false; btn.textContent='✓ Approve'; }
+  } catch { showToast('Network error'); btn.disabled=false; btn.textContent='✓ Approve'; }
+}
+
+async function generateCode() {
+  const site  = document.getElementById('gen-site').value;
+  const email = document.getElementById('assign-email').value.trim().toLowerCase();
+  const fname = document.getElementById('assign-fname').value.trim();
+
+  if (!email) {
+    showToast('Enter an email address — the code must be tied to a member');
+    document.getElementById('assign-email').focus();
+    return;
+  }
+
+  const btn = document.getElementById('gen-btn');
+  btn.textContent = 'Issuing…'; btn.disabled = true;
+
+  try {
+    const r = await fetch(`${SITES[site].api}/admin/issue-code/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+      body: JSON.stringify({ email, first_name: fname || 'Member' })
+    });
+    const d = await r.json();
+    if (r.ok) {
+      generatedCode = d.code;
+      document.getElementById('gen-code').textContent = d.code;
+      document.getElementById('gen-code').style.color = SITES[site].color;
+      document.getElementById('copy-ok').classList.remove('show');
+      document.getElementById('assign-result').innerHTML =
+        `<span style="color:#4caf50">✓ ${d.created ? 'New member created' : 'Member updated'} — code <strong>${d.code}</strong> is live and ready to use in the Private Lounge.</span>`;
+      showToast('✅ Code issued — works immediately!');
+      loadAll();
+    } else {
+      showToast('Failed: ' + (d.error || 'unknown error'));
+      document.getElementById('assign-result').innerHTML = `<span style="color:#f55">${d.error || 'Generation failed'}</span>`;
+    }
+  } catch {
+    showToast('Network error — check connection');
+  } finally {
+    btn.textContent = '🎲 Generate & Issue Code'; btn.disabled = false;
+  }
+}
+
+function copyCode() {
+  if (!generatedCode) { showToast('Generate a code first'); return; }
+  copy(generatedCode);
+  document.getElementById('copy-ok').classList.add('show');
+  setTimeout(() => document.getElementById('copy-ok').classList.remove('show'), 2500);
+}
+
+async function assignCode() {
+  const site  = document.getElementById('gen-site').value;
+  const email = document.getElementById('assign-email').value.trim().toLowerCase();
+  const res   = document.getElementById('assign-result');
+  if (!email) { res.innerHTML = '<span style="color:#f55">Enter a member email address</span>'; return; }
+
+  const member = (allMembers[site]||[]).find(m => m.email === email);
+  if (!member) { res.innerHTML = '<span style="color:#f55">Member not found — they must apply first</span>'; return; }
+  if (member.status === 'active') { res.innerHTML = `<span style="color:#ff9800">Already active: ${member.access_code}</span>`; return; }
+
+  const r = await fetch(`${SITES[site].api}/admin/approve-member/${member.id}/`, {
+    method: 'POST', headers: {'X-Admin-Token': adminToken}
+  });
+  const d = await r.json();
+  if (r.ok) {
+    res.innerHTML = `<span style="color:#4caf50">✓ Approved! Code: <strong>${d.access_code}</strong></span>`;
+    showToast(`✅ ${d.access_code}`); loadAll();
+  }
+}
+
+async function clearSession() {
+  const site = document.getElementById('test-site').value;
+  const code = document.getElementById('test-code').value.trim().toUpperCase();
+  const res  = document.getElementById('clear-result');
+  if (!code) { showToast('Enter a code above first'); return; }
+  try {
+    const r = await fetch(`${SITES[site].api}/admin/clear-session/`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-Admin-Token': adminToken},
+      body: JSON.stringify({code})
+    });
+    const d = await r.json();
+    if (r.ok) {
+      res.innerHTML = `<span style="color:#4caf50">✓ Session cleared for <strong>${d.code}</strong> — member can log in now.</span>`;
+      showToast('✅ Session cleared!');
+    } else {
+      res.innerHTML = `<span style="color:#f55">${d.error || 'Not found'}</span>`;
+    }
+  } catch { showToast('Network error'); }
+}
+
+async function clearSessionByEmail(site, email, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const r = await fetch(`${SITES[site].api}/admin/clear-session/`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-Admin-Token': adminToken},
+      body: JSON.stringify({email})
+    });
+    const d = await r.json();
+    if (r.ok) { showToast(`✅ Session cleared for ${email}`); }
+    else { showToast(d.error || 'Not found'); }
+  } catch { showToast('Network error'); }
+  btn.disabled = false; btn.textContent = '🔓';
+}
+
+async function testCode() {
+  const site = document.getElementById('test-site').value;
+  const code = document.getElementById('test-code').value.trim().toUpperCase();
+  if (!code) { showToast('Enter a code'); return; }
+  const resultEl = document.getElementById('test-result');
+  resultEl.className = 'test-result show';
+  document.getElementById('test-status').textContent = '⟳ Testing…';
+  document.getElementById('test-detail').textContent = '';
+  try {
+    const r = await fetch(`${SITES[site].api}/members/verify/`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({code})
+    });
+    const d = await r.json();
+    if (r.ok && d.status === 'valid') {
+      resultEl.className = 'test-result show valid';
+      document.getElementById('test-status').textContent = '✅ Valid Code';
+      const m = d.member;
+      document.getElementById('test-detail').innerHTML =
+        `<b>Name:</b> ${m.first_name||'—'}<br><b>Email:</b> ${m.email}<br><b>Site:</b> ${SITES[site].name}<br><b>Tier:</b> ${m.tier||'—'}`;
+    } else {
+      resultEl.className = 'test-result show invalid';
+      document.getElementById('test-status').textContent = '❌ Invalid Code';
+      document.getElementById('test-detail').textContent = d.message || 'Code not found or inactive.';
+    }
+  } catch {
+    resultEl.className = 'test-result show invalid';
+    document.getElementById('test-status').textContent = '⚠️ Error';
+    document.getElementById('test-detail').textContent = 'Network error — check your connection.';
+  }
+}
+
+// ── Helpers ───────────────────────────────────────
+function filterM(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderMembers();
+}
+
+function copy(text) {
+  navigator.clipboard?.writeText(text).then(() => showToast(`Copied: ${text}`)).catch(() => {
+    const t = document.createElement('textarea');
+    t.value = text; t.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(t); t.select(); document.execCommand('copy');
+    document.body.removeChild(t); showToast(`Copied: ${text}`);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── Service Worker ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/admin/sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
